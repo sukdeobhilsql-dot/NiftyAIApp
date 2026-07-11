@@ -1,40 +1,41 @@
 name: Build Android APK
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   build:
-    name: Build APK
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
+          cache: npm
 
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
+      - name: Install Dependencies
+        run: npm install
 
-      - name: Setup Expo and EAS
+      - name: Setup Expo & EAS
         uses: expo/expo-github-action@v8
         with:
-          expo-version: latest
           eas-version: latest
+          expo-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Build APK via EAS Cloud
-        run: eas build --platform android --profile preview --non-interactive
+      - name: Verify Login
+        run: eas whoami
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Show download link
-        run: |
-          echo "Build submitted to EAS!"
-          echo "Download APK from: https://expo.dev/accounts/YOUR_USERNAME/projects/niftyaiapp/builds"
+      - name: Build APK
+        run: eas build --platform android --profile preview --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
