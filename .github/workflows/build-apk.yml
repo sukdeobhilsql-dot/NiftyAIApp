@@ -22,34 +22,19 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Setup Expo & EAS
+      - name: Setup Expo and EAS
         uses: expo/expo-github-action@v8
         with:
           expo-version: latest
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Build APK via EAS
+      - name: Build APK via EAS Cloud
         run: eas build --platform android --profile preview --non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Get APK URL and download
+      - name: Show download link
         run: |
-          sleep 5
-          BUILD_URL=$(eas build:list --platform android --limit 1 \
-            --status finished --json --non-interactive | \
-            python3 -c "
-import sys,json
-data=json.load(sys.stdin)
-if data: print(data[0].get('artifacts',{}).get('buildUrl',''))
-")
-          echo "URL: $BUILD_URL"
-          curl -L "$BUILD_URL" -o NiftyAIPro.apk
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: NiftyAIPro-APK
-          path: NiftyAIPro.apk
-          retention-days: 30
+          echo "Build submitted to EAS!"
+          echo "Download APK from: https://expo.dev/accounts/YOUR_USERNAME/projects/niftyaiapp/builds"
