@@ -2,7 +2,7 @@
   "expo": {
     "name": "NiftyAI Pro",
     "slug": "niftyaiapp",
-"owner": "sukdeocodes-team",
+    "owner": "sukdeocodes-team",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -11,13 +11,13 @@
       "backgroundColor": "#070d0a"
     },
     "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#070d0a"
-      },
       "package": "com.sukdeo.niftyaipro",
       "permissions": [
         "android.permission.INTERNET"
-      ]
+      ],
+      "adaptiveIcon": {
+        "backgroundColor": "#070d0a"
+      }
     },
     "plugins": [],
     "extra": {
