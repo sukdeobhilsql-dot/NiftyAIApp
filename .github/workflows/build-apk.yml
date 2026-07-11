@@ -3,7 +3,7 @@ name: Build Android APK
 on:
   push:
     branches: [main]
-  workflow_dispatch:   # Manual trigger bhi allowed
+  workflow_dispatch:
 
 jobs:
   build:
@@ -18,10 +18,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Setup Expo & EAS
         uses: expo/expo-github-action@v8
@@ -35,15 +34,20 @@ jobs:
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Download APK from EAS
+      - name: Get APK URL and download
         run: |
-          BUILD_URL=$(eas build:list --platform android --limit 1 --json | \
-            python3 -c "import sys,json; builds=json.load(sys.stdin); \
-            print(builds[0]['artifacts']['buildUrl'])")
-          echo "APK URL: $BUILD_URL"
+          sleep 5
+          BUILD_URL=$(eas build:list --platform android --limit 1 \
+            --status finished --json --non-interactive | \
+            python3 -c "
+import sys,json
+data=json.load(sys.stdin)
+if data: print(data[0].get('artifacts',{}).get('buildUrl',''))
+")
+          echo "URL: $BUILD_URL"
           curl -L "$BUILD_URL" -o NiftyAIPro.apk
 
-      - name: Upload APK as artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: NiftyAIPro-APK
