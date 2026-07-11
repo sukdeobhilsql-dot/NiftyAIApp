@@ -1,0 +1,51 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:   # Manual trigger bhi allowed
+
+jobs:
+  build:
+    name: Build APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Setup Expo & EAS
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Build APK via EAS
+        run: eas build --platform android --profile preview --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Download APK from EAS
+        run: |
+          BUILD_URL=$(eas build:list --platform android --limit 1 --json | \
+            python3 -c "import sys,json; builds=json.load(sys.stdin); \
+            print(builds[0]['artifacts']['buildUrl'])")
+          echo "APK URL: $BUILD_URL"
+          curl -L "$BUILD_URL" -o NiftyAIPro.apk
+
+      - name: Upload APK as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NiftyAIPro-APK
+          path: NiftyAIPro.apk
+          retention-days: 30
