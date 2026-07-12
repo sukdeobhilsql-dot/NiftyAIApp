@@ -9,7 +9,8 @@ import {
   RefreshControl, Alert, Animated
 } from "react-native";
 
-const SERVER = "https://92.4.91.185";
+// Line 1 change karo:
+const SERVER = "http://92.4.91.185:8080";
 
 
 // ── Color tokens ─────────────────────────────────────────────────
