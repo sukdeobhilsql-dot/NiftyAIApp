@@ -73,24 +73,36 @@ function LoginScreen({ onLogin }) {
         <Text style={s.logo}>⚡ NiftyAI Pro</Text>
         <Text style={s.logoSub}>Algorithmic Options Trading</Text>
 
-        <View style={s.card}>
-          <Text style={s.sectionTitle}>DHAN CREDENTIALS</Text>
-          <Text style={s.label}>Client ID</Text>
-          <TextInput
-            style={s.input} value={clientId} onChangeText={setClientId}
-            placeholder="e.g. 1110820934" placeholderTextColor={C.gray}
-            keyboardType="numeric" autoCapitalize="none"
-          />
-          <Text style={s.label}>Access Token</Text>
-          <TextInput
-            style={[s.input, {height: 70}]} value={token} onChangeText={setToken}
-            placeholder="Paste your Dhan API token" placeholderTextColor={C.gray}
-            multiline autoCapitalize="none" secureTextEntry
-          />
-        </View>
+        {mode === "LIVE" && (
+          <View style={s.card}>
+            <Text style={s.sectionTitle}>DHAN CREDENTIALS</Text>
+            <Text style={s.label}>Client ID</Text>
+            <TextInput
+              style={s.input} value={clientId} onChangeText={setClientId}
+              placeholder="e.g. 1110820934" placeholderTextColor={C.gray}
+              keyboardType="numeric" autoCapitalize="none"
+            />
+            <Text style={s.label}>Access Token</Text>
+            <TextInput
+              style={[s.input, {height: 70}]} value={token} onChangeText={setToken}
+              placeholder="Paste your Dhan API token" placeholderTextColor={C.gray}
+              multiline autoCapitalize="none" secureTextEntry
+            />
+          </View>
+        )}
+
+        {mode === "DEMO" && (
+          <View style={s.card}>
+            <Text style={s.sectionTitle}>DEMO MODE</Text>
+            <Text style={{color: C.dimtext, fontSize: 12, lineHeight: 18}}>
+              Demo mode simulated prices ke saath chalta hai — koi Dhan login ki zaroorat nahi. Bas START BOT dabao.
+            </Text>
+          </View>
+        )}
 
         <View style={s.card}>
           <Text style={s.sectionTitle}>TRADE SETTINGS</Text>
+
           <View style={s.row}>
             <View style={{flex:1, marginRight:8}}>
               <Text style={s.label}>TP %</Text>
