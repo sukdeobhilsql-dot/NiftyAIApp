@@ -9,7 +9,8 @@ import {
   RefreshControl, Alert, Animated
 } from "react-native";
 
-const SERVER = "http://92.4.91.185:8080";   // ← apna VPS IP
+const SERVER = "https://92.4.91.185";
+
 
 // ── Color tokens ─────────────────────────────────────────────────
 const C = {
