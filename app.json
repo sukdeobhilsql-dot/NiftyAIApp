@@ -12,7 +12,7 @@
     },
     "android": {
       "package": "com.sukdeo.niftyaipro",
-      "usesCleartextTraffic": true,
+      "usesCleartextTraffic": true, 
       "permissions": [
         "android.permission.INTERNET"
       ],
