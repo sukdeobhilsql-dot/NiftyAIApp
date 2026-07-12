@@ -37,8 +37,8 @@ function LoginScreen({ onLogin }) {
   const [loading,   setLoading]   = useState(false);
 
   const handleStart = async () => {
-    if (!clientId || !token) {
-      Alert.alert("Required", "Client ID and Access Token are required.");
+    if (mode === "LIVE" && (!clientId || !token)) {
+      Alert.alert("Required", "Client ID and Access Token are required for LIVE mode.");
       return;
     }
     setLoading(true);
