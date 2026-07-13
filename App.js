@@ -309,13 +309,13 @@ function DashboardScreen({ clientId, onLogout }) {
             <View style={{flex:1}}>
               <Text style={s.dimTxt}>DAY P&L</Text>
               <Text style={[s.bigNum, {color: pnlCol}]}>
-                ₹{pnl >= 0 ? "+" : ""}{pnl}
+                ₹{pnl >= 0 ? "+" : ""}{pnl.toFixed(2)}
               </Text>
             </View>
             <View style={{flex:1, alignItems:"center"}}>
               <Text style={s.dimTxt}>BALANCE</Text>
               <Text style={[s.bigNum, {color: C.white}]}>
-                ₹{bal.total?.toLocaleString("en-IN") || "--"}
+                ₹{bal.total != null ? bal.total.toLocaleString("en-IN", {maximumFractionDigits: 2}) : "--"}
               </Text>
             </View>
             <View style={{flex:1, alignItems:"flex-end"}}>
