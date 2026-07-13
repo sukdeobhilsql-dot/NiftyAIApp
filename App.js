@@ -381,12 +381,18 @@ function DashboardScreen({ clientId, onLogout }) {
         {/* Today Log */}
         <View style={s.card}>
           <Text style={s.sectionTitle}>TODAY LOG</Text>
-          {logs.slice(0, 20).map((line, i) => (
-            <Text key={i} style={[s.logLine, {color: logColor(line)}]}
-              numberOfLines={2}>{line.trim()}</Text>
-          ))}
-          {logs.length === 0 &&
-            <Text style={s.dimTxt}>No logs yet...</Text>}
+          <ScrollView
+            style={s.logScroll}
+            nestedScrollEnabled={true}
+            showsVerticalScrollIndicator={true}
+          >
+            {logs.map((line, i) => (
+              <Text key={i} style={[s.logLine, {color: logColor(line)}]}
+                numberOfLines={2}>{line.trim()}</Text>
+            ))}
+            {logs.length === 0 &&
+              <Text style={s.dimTxt}>No logs yet...</Text>}
+          </ScrollView>
         </View>
 
         <View style={{height: 20}}/>
@@ -434,5 +440,6 @@ const s = StyleSheet.create({
   sigBadge:     { borderWidth:1, borderRadius:6, paddingHorizontal:10,
                   paddingVertical:4, flexDirection:"row" },
   sigTxt:       { fontWeight:"bold", fontSize:13 },
+  logScroll:    { maxHeight: 320 },
   logLine:      { fontSize:10, fontFamily:"monospace", marginBottom:2, lineHeight:15 },
 });
