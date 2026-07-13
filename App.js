@@ -6,7 +6,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import {
   View, Text, TextInput, TouchableOpacity, ScrollView,
   StyleSheet, SafeAreaView, StatusBar, ActivityIndicator,
-  RefreshControl, Alert, Animated
+  RefreshControl, Alert, Animated, AppState
 } from "react-native";
 
 // Line 1 change karo:
@@ -159,20 +159,64 @@ function DashboardScreen({ clientId, onLogout }) {
     ).start();
   }, []);
 
-  // WebSocket connection
-  useEffect(() => {
-    const wsUrl = SERVER.replace("http","ws") + `/ws/${clientId}`;
-    ws.current = new WebSocket(wsUrl);
+  // WebSocket connection — v2 FIX: auto-reconnect with backoff + reconnect on app foreground.
+  // Previously: onclose only set connected=false and never retried, so once Android
+  // killed the socket (screen lock / app minimized / Doze), the app stayed OFFLINE
+  // forever even after you reopened it, until a manual logout+login.
+  const reconnectTimer = useRef(null);
+  const retryCount     = useRef(0);
+  const closedByUs     = useRef(false);
 
-    ws.current.onopen    = () => setConnected(true);
-    ws.current.onclose   = () => setConnected(false);
-    ws.current.onerror   = () => setConnected(false);
-    ws.current.onmessage = (e) => {
+  const connectWs = useCallback(() => {
+    if (reconnectTimer.current) { clearTimeout(reconnectTimer.current); reconnectTimer.current = null; }
+    closedByUs.current = false;
+
+    const wsUrl = SERVER.replace("http", "ws") + `/ws/${clientId}`;
+    const socket = new WebSocket(wsUrl);
+    ws.current = socket;
+
+    socket.onopen = () => {
+      setConnected(true);
+      retryCount.current = 0;   // reset backoff on a healthy connect
+      fetchLogs();              // catch up on anything missed while disconnected
+    };
+    socket.onmessage = (e) => {
       try { setData(JSON.parse(e.data)); } catch {}
     };
-
-    return () => ws.current?.close();
+    const scheduleReconnect = () => {
+      setConnected(false);
+      if (closedByUs.current) return;   // we closed it on purpose (logout/unmount)
+      const delay = Math.min(1000 * 2 ** retryCount.current, 15000);  // 1s,2s,4s...capped 15s
+      retryCount.current += 1;
+      reconnectTimer.current = setTimeout(connectWs, delay);
+    };
+    socket.onclose = scheduleReconnect;
+    socket.onerror = scheduleReconnect;
   }, [clientId]);
+
+  useEffect(() => {
+    connectWs();
+    return () => {
+      closedByUs.current = true;
+      if (reconnectTimer.current) clearTimeout(reconnectTimer.current);
+      ws.current?.close();
+    };
+  }, [connectWs]);
+
+  // Reconnect immediately when the app comes back to foreground (unlock / restore
+  // from minimized) instead of waiting for the next backoff tick.
+  useEffect(() => {
+    const sub = AppState.addEventListener("change", (nextState) => {
+      if (nextState === "active") {
+        const s = ws.current;
+        if (!s || s.readyState === WebSocket.CLOSED || s.readyState === WebSocket.CLOSING) {
+          retryCount.current = 0;
+          connectWs();
+        }
+      }
+    });
+    return () => sub.remove();
+  }, [connectWs]);
 
   // Fetch logs every 10s
   const fetchLogs = useCallback(async () => {
