@@ -306,21 +306,38 @@ function DashboardScreen({ clientId, onLogout }) {
         {/* P&L + Balance */}
         <View style={s.card}>
           <View style={s.row}>
-            <View style={{flex:1}}>
+            <View style={{flex:1, paddingRight:4}}>
               <Text style={s.dimTxt}>DAY P&L</Text>
-              <Text style={[s.bigNum, {color: pnlCol}]}>
+              <Text
+                style={[s.bigNum, {color: pnlCol}]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.5}
+              >
                 ₹{pnl >= 0 ? "+" : ""}{pnl.toFixed(2)}
               </Text>
             </View>
-            <View style={{flex:1, alignItems:"center"}}>
+            <View style={{flex:1, alignItems:"center", paddingHorizontal:4}}>
               <Text style={s.dimTxt}>BALANCE</Text>
-              <Text style={[s.bigNum, {color: C.white}]}>
+              <Text
+                style={[s.bigNum, {color: C.white}]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.5}
+              >
                 ₹{bal.total != null ? bal.total.toLocaleString("en-IN", {maximumFractionDigits: 2}) : "--"}
               </Text>
             </View>
-            <View style={{flex:1, alignItems:"flex-end"}}>
+            <View style={{flex:1, alignItems:"flex-end", paddingLeft:4}}>
               <Text style={s.dimTxt}>TRADES</Text>
-              <Text style={[s.bigNum, {color: C.cyan}]}>{data?.trades||0}/10</Text>
+              <Text
+                style={[s.bigNum, {color: C.cyan}]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.5}
+              >
+                {data?.trades||0}/10
+              </Text>
             </View>
           </View>
         </View>
@@ -330,14 +347,19 @@ function DashboardScreen({ clientId, onLogout }) {
           <View key={i} style={[s.card, {borderColor: C.cyan, borderWidth:1}]}>
             <Text style={{color:C.cyan, fontSize:11, marginBottom:4}}>● ACTIVE POSITION</Text>
             <View style={s.row}>
-              <Text style={{color:C.white, fontWeight:"bold"}}>{p.symbol||"--"}</Text>
-              <Text style={{color: (p.pnl||0)>=0?C.green:C.red, fontWeight:"bold"}}>
-                ₹{p.pnl||0}
+              <Text style={{color:C.white, fontWeight:"bold", flexShrink:1}} numberOfLines={1}>{p.symbol||"--"}</Text>
+              <Text
+                style={{color: (p.pnl||0)>=0?C.green:C.red, fontWeight:"bold"}}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.6}
+              >
+                ₹{(p.pnl||0).toFixed(2)}
               </Text>
             </View>
             <View style={s.row}>
-              <Text style={s.dimTxt}>Entry: ₹{p.entry_price||0}</Text>
-              <Text style={s.dimTxt}>LTP: ₹{p.ltp||0}</Text>
+              <Text style={s.dimTxt}>Entry: ₹{(p.entry_price||0).toFixed(2)}</Text>
+              <Text style={s.dimTxt}>LTP: ₹{(p.ltp||0).toFixed(2)}</Text>
             </View>
           </View>
         ))}
