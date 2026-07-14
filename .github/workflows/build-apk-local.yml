@@ -33,10 +33,11 @@ jobs:
 
       - name: Increase Gradle JVM heap size (fixes Java heap space OOM)
         run: |
-          echo "org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m -XX:+HeapDumpOnOutOfMemoryError" >> android/gradle.properties
-          echo "org.gradle.daemon=false" >> android/gradle.properties
-          echo "org.gradle.parallel=false" >> android/gradle.properties
+          sed -i 's/^org.gradle.jvmargs=.*/org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m -XX:+HeapDumpOnOutOfMemoryError/' android/gradle.properties
+          printf "\norg.gradle.daemon=false\norg.gradle.parallel=false\n" >> android/gradle.properties
+          echo "----- Final gradle.properties -----"
           cat android/gradle.properties
+          echo "------------------------------------"
 
       - name: Grant execute permission for gradlew
         run: chmod +x android/gradlew
