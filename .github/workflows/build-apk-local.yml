@@ -1,4 +1,4 @@
-name: Build Android APK (Local Gradle, no EAS)
+name: Build Android APK
 
 on:
   workflow_dispatch:
@@ -10,6 +10,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      CI: true
+      NODE_ENV: production
+      GRADLE_OPTS: "-Xmx4g -Dorg.gradle.jvmargs=-Xmx4g"
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -17,29 +22,47 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
+          cache: npm
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
+          cache: gradle
 
       - name: Install Dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Prebuild native Android project
-        run: npx expo prebuild --platform android --non-interactive
+      - name: Install Expo System UI
+        run: npx expo install expo-system-ui
 
-      - name: Grant execute permission for gradlew
+      - name: Generate Android Project
+        run: npx expo prebuild --platform android --clean
+
+      - name: Increase Gradle Memory
+        run: |
+          echo "org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1024m -Dfile.encoding=UTF-8" >> android/gradle.properties
+          echo "org.gradle.daemon=false" >> android/gradle.properties
+          echo "org.gradle.parallel=false" >> android/gradle.properties
+          echo "org.gradle.workers.max=2" >> android/gradle.properties
+          echo "android.useAndroidX=true" >> android/gradle.properties
+          echo "android.enableJetifier=true" >> android/gradle.properties
+
+      - name: Grant Execute Permission
         run: chmod +x android/gradlew
 
-      - name: Build Debug APK
+      - name: Clean Gradle
         working-directory: android
-        run: ./gradlew assembleDebug --no-daemon
+        run: ./gradlew clean --no-daemon
 
-      - name: Upload APK artifact
+      - name: Build APK
+        working-directory: android
+        run: ./gradlew assembleDebug --stacktrace --no-daemon
+
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: NiftyAIPro-debug-apk
+          name: NiftyAIPro-Debug
           path: android/app/build/outputs/apk/debug/app-debug.apk
