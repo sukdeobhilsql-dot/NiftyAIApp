@@ -34,10 +34,9 @@ jobs:
       - name: Bundle JS into APK assets (fixes "Unable to load script")
         run: |
           mkdir -p android/app/src/main/assets
-          npx react-native bundle \
+          npx expo export:embed \
             --platform android \
             --dev false \
-            --entry-file node_modules/expo/AppEntry.js \
             --bundle-output android/app/src/main/assets/index.android.bundle \
             --assets-dest android/app/src/main/res
 
