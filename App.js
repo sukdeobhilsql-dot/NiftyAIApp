@@ -314,7 +314,7 @@ function DashboardScreen({ clientId, onLogout }) {
                 adjustsFontSizeToFit
                 minimumFontScale={0.5}
               >
-                ₹{pnl >= 0 ? "+" : ""}{pnl.toFixed(2)}
+                ₹{pnl >= 0 ? "+" : ""}{Math.round(pnl)}
               </Text>
             </View>
             <View style={{flex:1, alignItems:"center", paddingHorizontal:4}}>
@@ -325,7 +325,7 @@ function DashboardScreen({ clientId, onLogout }) {
                 adjustsFontSizeToFit
                 minimumFontScale={0.5}
               >
-                ₹{bal.total != null ? bal.total.toLocaleString("en-IN", {maximumFractionDigits: 2}) : "--"}
+                ₹{bal.total != null ? Math.round(bal.total).toLocaleString("en-IN") : "--"}
               </Text>
             </View>
             <View style={{flex:1, alignItems:"flex-end", paddingLeft:4}}>
@@ -354,12 +354,12 @@ function DashboardScreen({ clientId, onLogout }) {
                 adjustsFontSizeToFit
                 minimumFontScale={0.6}
               >
-                ₹{(p.pnl||0).toFixed(2)}
+                ₹{Math.round(p.pnl||0)}
               </Text>
             </View>
             <View style={s.row}>
-              <Text style={s.dimTxt}>Entry: ₹{(p.entry_price||0).toFixed(2)}</Text>
-              <Text style={s.dimTxt}>LTP: ₹{(p.ltp||0).toFixed(2)}</Text>
+              <Text style={s.dimTxt}>Entry: ₹{Math.round(p.entry_price||0)}</Text>
+              <Text style={s.dimTxt}>LTP: ₹{Math.round(p.ltp||0)}</Text>
             </View>
           </View>
         ))}
@@ -458,7 +458,7 @@ const s = StyleSheet.create({
   serverNote:   { color:C.gray, fontSize:10, textAlign:"center", marginTop:12 },
   headerTitle:  { color:C.green, fontSize:18, fontWeight:"bold" },
   dimTxt:       { color:C.dimtext, fontSize:11 },
-  bigNum:       { fontSize:22, fontWeight:"bold", fontFamily:"monospace" },
+  bigNum:       { fontSize:18, fontWeight:"bold", fontFamily:"monospace" },
   sigBadge:     { borderWidth:1, borderRadius:6, paddingHorizontal:10,
                   paddingVertical:4, flexDirection:"row" },
   sigTxt:       { fontWeight:"bold", fontSize:13 },
