@@ -298,7 +298,7 @@ function DashboardScreen({ clientId, onLogout }) {
 
   useEffect(() => {
     fetchLogs();
-    const t = setInterval(fetchLogs, 10000);
+    const t = setInterval(fetchLogs, 1000);
     return () => clearInterval(t);
   }, [fetchLogs]);
 
